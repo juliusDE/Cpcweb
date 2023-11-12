@@ -9,31 +9,65 @@ export default {
   },
   methods: {
     getToken() {
-      return "token";
+      this.$Request
+        .post("/login", {
+          username: this.username,
+          password: this.password,
+        })
+        .then((response) => {
+          if ("token" in response.data) {
+            this.$store.dispatch("login", response.data.token);
+            this.$router.push({ name: "Home" });
+          }
+        })
+        .catch((error) => {});
     },
     async login() {
-      let token = await this.getToken();
-      // Llama a la acción de Vuex para realizar el inicio de sesión
-      this.$store.dispatch("login", token);
-      // Redirige a la página principal
-      if (this.$store.state.token) {
-        this.$router.push({ name: "Home" });
+      if (this.$refs.login.validate()) {
+        await this.getToken();
       }
+    },
+  },
+  computed: {
+    blanksInput() {
+      return [(value) => !!value || "Campo obligatorio"];
     },
   },
 };
 </script>
 <template>
   <v-container>
-    <v-form @submit.prevent="login">
-      <v-text-field v-model="username" label="Usuario" required></v-text-field>
-      <v-text-field
-        v-model="password"
-        label="Contraseña"
-        type="password"
-        required
-      ></v-text-field>
-      <v-btn type="submit" color="primary">Iniciar Sesión</v-btn>
-    </v-form>
+    <v-card>
+      <v-card-text>
+        <v-form @submit.prevent="login" ref="login">
+          <v-row>
+            <v-col class="d-flex justify-content-center">
+              <v-text-field
+                v-model="username"
+                label="Usuario"
+                required
+                :rules="blanksInput"
+              ></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col class="d-flex justify-content-center">
+              <v-text-field
+                v-model="password"
+                label="Contraseña"
+                type="password"
+                required
+                :rules="blanksInput"
+              ></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col class="d-flex justify-content-center">
+              <v-btn type="submit" color="primary">Iniciar Sesión</v-btn>
+            </v-col>
+          </v-row>
+        </v-form>
+      </v-card-text>
+    </v-card>
   </v-container>
 </template>

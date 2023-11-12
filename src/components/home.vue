@@ -37,12 +37,53 @@ export default {
       },
     };
   },
+  mounted() {
+    this.getData();
+  },
   methods: {
+    getData() {
+      this.$Request
+        .post("/home", {
+          fun: "list",
+        })
+        .then((response) => {
+          if ("list" in response.data) {
+            this.table.items = response.data.list;
+          }
+        })
+        .catch((error) => {});
+    },
     openform() {
       this.formModel.show = true;
     },
+    validClient() {
+      if (this.$refs.client.validate()) {
+        this.formModel.view++;
+      }
+    },
+    validData() {
+      if (this.$refs.data.validate()) {
+        console.log(this.formModel.Data);
+      }
+    },
   },
   computed: {
+    option() {
+      return [
+        {
+          text: "op1",
+          cmd: "op1",
+        },
+        {
+          text: "op1",
+          cmd: "op1",
+        },
+        {
+          text: "op1",
+          cmd: "op1",
+        },
+      ];
+    },
     itemsTable() {
       return this.table.items.map((e) => {
         return {
@@ -95,6 +136,9 @@ export default {
         },
       ];
     },
+    blanksInput() {
+      return [(value) => !!value || "Campo obligatorio"];
+    },
   },
 };
 </script>
@@ -133,7 +177,9 @@ export default {
                 <v-icon :attrs="attrs" v-on="on"> mdi-menu </v-icon>
               </template>
               <v-list>
-                <v-list-item>prueba</v-list-item>
+                <template v-for="(option, i) in option">
+                  <v-list-item :key="i">{{ option.text }}</v-list-item>
+                </template>
               </v-list>
             </v-menu>
           </template>
@@ -153,10 +199,10 @@ export default {
         </v-card-tittle>
         <v-card-text class="scroll-y">
           <br />
-          <v-form>
-            <v-tabs-items v-model="formModel.view">
-              <!--client data-->
-              <v-tab-item key="0">
+          <v-tabs-items v-model="formModel.view">
+            <!--client data-->
+            <v-tab-item key="0">
+              <v-form @submit.prevent="validClient()" ref="client">
                 <v-row dense>
                   <v-col class="d-flex justify-content-center">
                     <label class="font-weight-bold">Datos del cliente.</label>
@@ -172,6 +218,7 @@ export default {
                       maxlength="10"
                       label="Cédula"
                       required
+                      :rules="blanksInput"
                     ></v-text-field>
                   </v-col>
                   <!--Name-->
@@ -182,6 +229,7 @@ export default {
                       maxlength="10"
                       label="Nombre"
                       required
+                      :rules="blanksInput"
                     ></v-text-field>
                   </v-col>
                 </v-row>
@@ -217,6 +265,7 @@ export default {
                       label="Email:"
                       required
                       type="email"
+                      :rules="blanksInput"
                     ></v-text-field>
                   </v-col>
                   <!--address-->
@@ -227,25 +276,23 @@ export default {
                       maxlength="60"
                       label="Dirección:"
                       required
+                      :rules="blanksInput"
                     ></v-text-field>
                   </v-col>
                 </v-row>
                 <!--buttons-->
                 <v-row>
                   <v-col class="d-flex justify-content-end">
-                    <v-btn
-                      class="mx-3"
-                      dark
-                      color="indigo"
-                      @click="formModel.view += 1"
-                    >
+                    <v-btn class="mx-3" dark color="indigo" type="submit">
                       Siguiente
                     </v-btn>
                   </v-col>
                 </v-row>
-              </v-tab-item>
-              <!--form data-->
-              <v-tab-item key="1">
+              </v-form>
+            </v-tab-item>
+            <!--form data-->
+            <v-tab-item key="1">
+              <v-form @submit.prevent="validData()" ref="data">
                 <!--subtittle-->
                 <v-row dense>
                   <v-col class="d-flex justify-content-center">
@@ -262,6 +309,7 @@ export default {
                       v-model="formModel.data.map"
                       :items="selectItems.map"
                       required
+                      :rules="blanksInput"
                     ></v-select>
                   </v-col>
                   <v-col>
@@ -270,6 +318,7 @@ export default {
                       v-model="formModel.data.quotation"
                       :items="selectItems.quotation"
                       required
+                      :rules="blanksInput"
                     ></v-select>
                   </v-col>
                 </v-row>
@@ -287,7 +336,9 @@ export default {
                             v-model="formModel.data.area1"
                             label="Área 1."
                             type="number"
+                            min="1"
                             required
+                            :rules="blanksInput"
                           ></v-text-field>
                         </v-col>
                       </v-row>
@@ -301,6 +352,7 @@ export default {
                             label="Área 2."
                             type="number"
                             required
+                            :rules="blanksInput"
                           ></v-text-field>
                         </v-col>
                       </v-row>
@@ -314,6 +366,7 @@ export default {
                             label="Área 3."
                             type="number"
                             required
+                            :rules="blanksInput"
                           ></v-text-field>
                         </v-col>
                       </v-row>
@@ -327,6 +380,7 @@ export default {
                             label="Área 4."
                             type="number"
                             required
+                            :rules="blanksInput"
                           ></v-text-field>
                         </v-col>
                       </v-row>
@@ -340,6 +394,7 @@ export default {
                             label="Área 5."
                             type="number"
                             required
+                            :rules="blanksInput"
                           ></v-text-field>
                         </v-col>
                       </v-row>
@@ -352,6 +407,7 @@ export default {
                           v-model="formModel.data.cant"
                           :items="selectItems.cant"
                           required
+                          :rules="blanksInput"
                         ></v-select>
                       </v-row>
                       <v-row>
@@ -361,6 +417,7 @@ export default {
                             v-model="formModel.data.zone"
                             :items="selectItems.zone"
                             required
+                            :rules="blanksInput"
                           ></v-select>
                         </v-col>
                       </v-row>
@@ -376,7 +433,9 @@ export default {
                         v-model="formModel.data.area"
                         label="Área."
                         type="number"
+                        min="1"
                         required
+                        :rules="blanksInput"
                       ></v-text-field>
                     </v-col>
                     <!--zone-->
@@ -386,6 +445,7 @@ export default {
                         v-model="formModel.data.zone"
                         :items="selectItems.zone"
                         required
+                        :rules="blanksInput"
                       ></v-select>
                     </v-col>
                   </v-row>
@@ -399,6 +459,7 @@ export default {
                       label="Cargos extra."
                       type="number"
                       required
+                      :rules="blanksInput"
                     ></v-text-field>
                   </v-col>
                   <!--detail-->
@@ -406,6 +467,7 @@ export default {
                     <v-text-field
                       v-model="formModel.data.detail"
                       label="Observaciones."
+                      :rules="blanksInput"
                     ></v-text-field>
                   </v-col>
                 </v-row>
@@ -422,12 +484,14 @@ export default {
                     </v-btn>
                   </v-col>
                   <v-col class="d-flex justify-content-end">
-                    <v-btn class="mx-3" dark color="indigo"> Siguiente </v-btn>
+                    <v-btn class="mx-3" dark color="indigo" type="submit">
+                      Finalizar
+                    </v-btn>
                   </v-col>
                 </v-row>
-              </v-tab-item>
-            </v-tabs-items>
-          </v-form>
+              </v-form>
+            </v-tab-item>
+          </v-tabs-items>
         </v-card-text>
       </v-card>
     </v-dialog>

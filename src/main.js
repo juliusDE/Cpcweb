@@ -6,9 +6,11 @@ import "@mdi/font/css/materialdesignicons.css";
 import "bootstrap/dist/css/bootstrap.css";
 import router from "./router";
 import store from "./store";
+import Request from "./axios";
 import es from "vuetify/es5/locale/es";
 
 Vue.config.productionTip = false;
+Vue.prototype.$Request = Request;
 
 Vue.use(Vuetify);
 
