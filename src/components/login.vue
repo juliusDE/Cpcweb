@@ -10,15 +10,15 @@ export default {
   methods: {
     getToken() {
       this.$Request
-        .post("/login", {
+        .post("/users/login", {
           username: this.username,
           password: this.password,
         })
         .then((response) => {
-          if ("token" in response.data) {
+          /*if ("token" in response.data) {
             this.$store.dispatch("login", response.data.token);
             this.$router.push({ name: "Home" });
-          }
+          }*/
         })
         .catch((error) => {});
     },
