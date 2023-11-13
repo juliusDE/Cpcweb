@@ -9,18 +9,13 @@ export default {
   },
   methods: {
     getToken() {
-      this.$Request
-        .post("/users/login", {
-          username: this.username,
-          password: this.password,
-        })
-        .then((response) => {
-          /*if ("token" in response.data) {
-            this.$store.dispatch("login", response.data.token);
-            this.$router.push({ name: "Home" });
-          }*/
-        })
-        .catch((error) => {});
+      if (this.username === "user@test.com" && this.password === "12345") {
+        this.$store.dispatch(
+          "login",
+          "añaldjfñlakdjsfñaldkjfñalsdkfjañldkfjñaldkfjañsdlfjñalsdkfjasñvhpaldkfjñaldsfja"
+        );
+        this.$router.push({ name: "Home" });
+      }
     },
     async login() {
       if (this.$refs.login.validate()) {
